@@ -2,16 +2,27 @@
 namespace NovaUnlimited.Core.Entities;
 
 using System;
+using NovaUnlimited.Core.Entities.Events;
+using NovaUnlimited.Core.Exceptions;
 using NovaUnlimited.Core.Util;
 using Xunit;
 
 public class MapUnitTest
 {
-    private const int _testRadius = 13;
+    public const int TestMapRadius = 13;
 
-    private static Map GenMap()
+    public static Map GenMap()
     {
-        return new Map(_testRadius);
+        return new Map(TestMapRadius);
+    }
+
+    [Fact]
+    public void TestMapPreConditions()
+    {
+        var map = GenMap();
+
+        Assert.Equal(1, map.TurnNumber);
+        Assert.Equal(TestMapRadius, map.Radius);
     }
 
     [Fact]
@@ -23,7 +34,7 @@ public class MapUnitTest
     
         // Then
         Assert.Equal(27, map.Diameter);
-        Assert.Equal(_testRadius, map.Radius);
+        Assert.Equal(TestMapRadius, map.Radius);
         Assert.Equal(27, map.Size.Q);
         Assert.Equal(27, map.Size.R);
     }
@@ -65,7 +76,7 @@ public class MapUnitTest
         Hex loc = new(q,r);
         var tile = new Tile(map, loc);
 
-        Assert.Throws<ArgumentException>(() =>
+        Assert.Throws<IndexOutOfRangeException>(() =>
             {
                 map.PutTile(tile, loc);
             }
@@ -84,4 +95,61 @@ public class MapUnitTest
 
         Assert.Equal(tile, map.TileAt(loc));
     }
+
+    [Fact]
+    public void TestMapPutTileOnTile()
+    {
+        var map = GenMap();
+        Hex loc = new(13,13);
+        var tile1 = new Tile(map, loc);
+        var tile2 = new Tile(map, loc);
+
+        map.PutTile(tile1, loc);
+
+        Assert.Throws<TileAlreadyInitializedException>(
+            () => map.PutTile(tile2, loc)
+        );
+    }
+
+#region "Map Event Handling"
+    [Fact]
+    public void TestValidTileEventBoundaries()
+    {
+        var map = GenMap();
+        Hex loc = new(14,14);
+        var pse = new PlaceStarEvent(1, TurnPhase.PostTurn, loc, 100);
+
+        map.QueueEvent(pse);
+    }
+
+    [Fact]
+    public void TestInvalidTileEventBoundaries()
+    {
+        var map = GenMap();
+        Hex loc = new(140,140);
+        var pse = new PlaceStarEvent(1, TurnPhase.PostTurn, loc, 100);
+        
+        var ex = Assert.Throws<IndexOutOfRangeException>(() => map.QueueEvent(pse));
+    }
+
+    [Fact]
+    public void TestInvalidEventTurnNumber()
+    {
+        var map = GenMap();
+        Hex loc = new (14,14);
+        var pse = new PlaceStarEvent(1, TurnPhase.PreTurn, loc, 100);
+
+        map.PreTurn();
+        map.PostTurn();
+
+        Assert.Equal(2, map.TurnNumber);
+
+        var ex = Assert.Throws<ArgumentException>(() => map.QueueEvent(pse));
+        Assert.Equal("Cannot queue an event for a previous turn.", ex.Message);
+
+        var pse2 = new PlaceStarEvent(2, TurnPhase.PreTurn, loc, 100);
+        ex = Assert.Throws<ArgumentException>(() => map.QueueEvent(pse2));
+        Assert.Equal("Cannot queue a PreTurn event during the same turn.", ex.Message);
+    }
+#endregion
 }
