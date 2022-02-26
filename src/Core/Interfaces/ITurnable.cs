@@ -1,9 +1,11 @@
 
+using NovaUnlimited.Core.Entities.Events;
+
 namespace NovaUnlimited.Core.Interfaces;
 
 public interface ITurnable
 {
-    void PreTurn();
+    List<AbstractEvent> PreTurn(int turnNumber);
 
-    void PostTurn();
+    List<AbstractEvent> PostTurn(int turnNumber);
 }

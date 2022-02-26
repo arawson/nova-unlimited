@@ -1,5 +1,4 @@
 
-using NovaUnlimited.Core.Interfaces.Events;
 using NovaUnlimited.Core.Util;
 using Ardalis.GuardClauses;
 

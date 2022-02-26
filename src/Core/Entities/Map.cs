@@ -11,7 +11,7 @@ namespace NovaUnlimited.Core.Entities;
 /*
 The hexagonal storage of the entire universe!
 */
-public class Map : BaseEntity, IEventDispatcher, ITurnable
+public class Map : BaseEntity
 {
     public Tile[,] Tiles { get; private set; }
     public Hex Size { get; private set; }
