@@ -12,10 +12,10 @@ public enum TileType
     Star
 }
 
-public class Tile : BaseEntity, ITileEventListener, IPlaceStarEventListener
+public class Tile : BaseEntity
 {
-    public TileType Contents { get; private set; }
-    public Star? Star { get; private set; }
+    public TileType Contents { get; set; }
+    public Star? Star { get; set; }
 
     /// Initialize an empty tile
     public Tile(Map map, Hex location)
@@ -26,7 +26,8 @@ public class Tile : BaseEntity, ITileEventListener, IPlaceStarEventListener
         Star = null;
     }
 
-    public void Handle(ITileEvent tileEvent)
+    //[Deprecated]
+    private void Handle(ITileEvent tileEvent)
     {
         /*
         TODO search through the child game-objects and dispatch events
@@ -55,7 +56,8 @@ public class Tile : BaseEntity, ITileEventListener, IPlaceStarEventListener
         // the map handles marking events as processed
     }
 
-    public void Handle(PlaceStarEvent e)
+    // deprecated
+    private void Handle(PlaceStarEvent e)
     {
         throw new NotImplementedException();
     }

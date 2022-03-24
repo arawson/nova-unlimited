@@ -1,9 +1,6 @@
 
 using NovaUnlimited.Core.Util;
 using Ardalis.GuardClauses;
-using NovaUnlimited.Core.Entities.Events;
-using NovaUnlimited.Core.Interfaces.Events;
-using NovaUnlimited.Core.Interfaces;
 using NovaUnlimited.Core.Exceptions;
 
 namespace NovaUnlimited.Core.Entities;
@@ -17,10 +14,7 @@ public class Map : BaseEntity
     public Hex Size { get; private set; }
     public int Radius { get; private set; }
     public int Diameter { get; private set; }
-    public int TurnNumber { get; private set; }
 
-    protected SortedDictionary<int, List<AbstractEvent>> Events { get; private set; }
-    
     public Map(int radius)
     {
         Guard.Against.NegativeOrZero(radius, nameof(radius));
@@ -32,10 +26,6 @@ public class Map : BaseEntity
 
         Size = new(Diameter, Diameter);
         Tiles = new Tile[Diameter, Diameter];
-
-        TurnNumber = 1;
-
-        Events = new SortedDictionary<int, List<AbstractEvent>>();
     }
 
 #region "Helper Methods"
@@ -135,97 +125,4 @@ public class Map : BaseEntity
             */
     }
 #endregion "Map/Tile Manipulation"
-
-#region "Event Handling"
-    public void QueueEvent(AbstractEvent e)
-    {
-        Guard.Against.AgainstExpression(
-            t => t >= TurnNumber,
-            e.TurnNumber,
-            "Cannot queue an event for a previous turn."
-        );
-
-        Guard.Against.AgainstExpression(
-            tup => !(tup.TurnNumber == TurnNumber && tup.Phase == TurnPhase.PreTurn),
-            (e.TurnNumber, e.Phase),
-            "Cannot queue a PreTurn event during the same turn."
-        );
-
-        if (e is ITileEvent)
-        {
-            var te = e as ITileEvent;
-            if (!IsWithin(te!.Location))
-                throw new IndexOutOfRangeException("Tile Event outside of map.");
-        }
-
-        var elist = Events.GetValueOrDefault(e.TurnNumber);
-        if (elist == null)
-        {
-            elist = new List<AbstractEvent>();
-            Events[e.TurnNumber] = elist;
-        }
-
-        elist.Add(e);
-    }
-    
-    private void ProcessPreTurnEvents()
-    {
-        var elist = Events.GetValueOrDefault(TurnNumber);
-        if (elist == null) return; // EZPZ
-
-        var ptevents = elist.Where(x => x.Phase == TurnPhase.PreTurn);
-        foreach (var e in ptevents)
-        {
-            ProcessBaseEvent(e);
-        }
-    }
-
-    private void ProcessPostTurnEvents()
-    {
-        var elist = Events.GetValueOrDefault(TurnNumber);
-        if (elist == null) return; // EZPZ
-
-        var ptevents = elist.Where(x => x.Phase == TurnPhase.PostTurn);
-        foreach (var e in ptevents)
-        {
-            ProcessBaseEvent(e);
-        }
-    }
-
-    private void ProcessBaseEvent(AbstractEvent e)
-    {
-        // TODO See Tile for the note on handling using a type-table
-        var tileEvent = e as ITileEvent;
-        if (tileEvent == null)
-        {
-            // Handle map-wide events
-        }
-        else
-        {
-            // Handle Tile events
-            var tile = TileAt(tileEvent.Location);
-            // this one shouldn't happen since we guard on the insert side
-            Guard.Against.Null(tile, nameof(tile), "Tile not found.");
-            tile.Handle(tileEvent);
-        }
-
-        e.MarkProcessed();
-    }
-
-    #endregion "Event Manipulation"
-
-#region "Turn Handling"
-    public void PreTurn()
-    {
-        ProcessPreTurnEvents();
-    }
-
-    public void PostTurn()
-    {
-        ProcessPostTurnEvents();
-
-        TurnNumber++;
-    }
-#endregion
-
 }

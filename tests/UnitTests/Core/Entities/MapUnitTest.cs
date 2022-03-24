@@ -21,7 +21,6 @@ public class MapUnitTest
     {
         var map = GenMap();
 
-        Assert.Equal(1, map.TurnNumber);
         Assert.Equal(TestMapRadius, map.Radius);
     }
 
@@ -111,45 +110,4 @@ public class MapUnitTest
         );
     }
 
-#region "Map Event Handling"
-    [Fact]
-    public void TestValidTileEventBoundaries()
-    {
-        var map = GenMap();
-        Hex loc = new(14,14);
-        var pse = new PlaceStarEvent(1, TurnPhase.PostTurn, loc, 100);
-
-        map.QueueEvent(pse);
-    }
-
-    [Fact]
-    public void TestInvalidTileEventBoundaries()
-    {
-        var map = GenMap();
-        Hex loc = new(140,140);
-        var pse = new PlaceStarEvent(1, TurnPhase.PostTurn, loc, 100);
-        
-        var ex = Assert.Throws<IndexOutOfRangeException>(() => map.QueueEvent(pse));
-    }
-
-    [Fact]
-    public void TestInvalidEventTurnNumber()
-    {
-        var map = GenMap();
-        Hex loc = new (14,14);
-        var pse = new PlaceStarEvent(1, TurnPhase.PreTurn, loc, 100);
-
-        map.PreTurn();
-        map.PostTurn();
-
-        Assert.Equal(2, map.TurnNumber);
-
-        var ex = Assert.Throws<ArgumentException>(() => map.QueueEvent(pse));
-        Assert.Equal("Cannot queue an event for a previous turn.", ex.Message);
-
-        var pse2 = new PlaceStarEvent(2, TurnPhase.PreTurn, loc, 100);
-        ex = Assert.Throws<ArgumentException>(() => map.QueueEvent(pse2));
-        Assert.Equal("Cannot queue a PreTurn event during the same turn.", ex.Message);
-    }
-#endregion
 }
