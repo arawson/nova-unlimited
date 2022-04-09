@@ -19,6 +19,27 @@
             },
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "watch",
+                "run",
+                "${workspaceFolder}/src/Web/bin/Debug/net6.0/Web.dll",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "options":{
+                "cwd": "${workspaceFolder}/src/Web"
+            },
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
         }
     ]
 }
