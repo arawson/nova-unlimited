@@ -3,6 +3,7 @@ using NovaUnlimited.Core.Util;
 using NovaUnlimited.Core.Interfaces.Events;
 using Ardalis.GuardClauses;
 using NovaUnlimited.Core.Entities.Events;
+using NovaUnlimited.Core.Interfaces;
 
 namespace NovaUnlimited.Core.Entities;
 
@@ -12,19 +13,22 @@ public enum TileType
     Star
 }
 
-public class Tile : BaseEntity
+public class Tile : IIdentifiable
 {
+    public long Id { get; set; }
     public TileType Contents { get; set; }
     public Star? Star { get; set; }
 
     /// Initialize an empty tile
-    public Tile(Map map, Hex location)
+    public Tile(Hex location)
     {
-        Guard.Against.Null(map, nameof(map));
-
         Contents = TileType.Empty;
         Star = null;
     }
+
+    public Tile(Map m, Hex location) : this(location) {}
+
+    public Tile() {}
 
     //[Deprecated]
     private void Handle(ITileEvent tileEvent)

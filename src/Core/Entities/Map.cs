@@ -1,19 +1,50 @@
 
+using System.Linq;
 using NovaUnlimited.Core.Util;
 using Ardalis.GuardClauses;
 using NovaUnlimited.Core.Exceptions;
+using NovaUnlimited.Core.Interfaces;
+using NovaUnlimited.Kernel.Serialization;
 
 namespace NovaUnlimited.Core.Entities;
+
+public record class TileArrayEntry : ArrayEntry<Tile, Map> { }
 
 /*
 The hexagonal storage of the entire universe!
 */
-public class Map : BaseEntity
+public class Map : IIdentifiable
 {
-    public Tile[,] Tiles { get; private set; }
-    public Hex Size { get; private set; }
-    public int Radius { get; private set; }
-    public int Diameter { get; private set; }
+    public Hex Size { get; set; }
+    public int Radius { get; set; }
+    public int Diameter { get; set; }
+    public long Id { get; set; }
+
+    private Tile[,] _tiles;
+    public Tile[,] Tiles { get => _tiles; }
+    public virtual ICollection<TileArrayEntry> _tileCollection
+    {
+        get {
+            List<TileArrayEntry> returnVal = new List<TileArrayEntry>();
+            for (int i = 0; i < _tiles.GetUpperBound(0); i++)
+            for (int j = 0; j < _tiles.GetUpperBound(1); j++)
+            {
+                returnVal.Add(new TileArrayEntry(){
+                    OwnerId = Id,
+                    Owner = this,
+                    IndexX = i,
+                    IndexY = j,
+                    Value = _tiles[i,j]
+                });
+            }
+            return returnVal;
+        }
+        set {
+            foreach(var e in value) {
+                _tiles[e.IndexX, e.IndexY] = e.Value;
+            }
+        }
+    }
 
     public Map(int radius)
     {
@@ -25,7 +56,7 @@ public class Map : BaseEntity
         Diameter = radius * 2 + 1;
 
         Size = new(Diameter, Diameter);
-        Tiles = new Tile[Diameter, Diameter];
+        _tiles = new Tile[Diameter, Diameter];
     }
 
 #region "Helper Methods"

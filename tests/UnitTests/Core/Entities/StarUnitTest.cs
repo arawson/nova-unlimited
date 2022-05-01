@@ -1,8 +1,5 @@
 
-namespace NovaUnlimited.Core.Entities;
-
-using NovaUnlimited.Core.Util;
-using Xunit;
+namespace NovaUnlimited.UnitTests.Core;
 
 public class StarUnitTest
 {

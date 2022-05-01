@@ -5,7 +5,7 @@ using NovaUnlimited.Core.Util;
 
 namespace NovaUnlimited.Core.Entities.Events;
 
-public abstract class AbstractTileEvent : AbstractEvent, ITileEvent
+public abstract class AbstractTileEvent : BaseEvent, ITileEvent
 {
     public Hex Location { get; private init; }
 

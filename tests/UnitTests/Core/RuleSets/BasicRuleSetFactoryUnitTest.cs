@@ -1,8 +1,9 @@
 
-namespace NovaUnlimited.Core.RuleSets;
-
 using NovaUnlimited.Core.Exceptions;
+using NovaUnlimited.Core.RuleSets;
 using Xunit;
+
+namespace NovaUnlimited.UnitTests.Core.RuleSets;
 
 public class BasicRuleSetFactoryUnitTest
 {

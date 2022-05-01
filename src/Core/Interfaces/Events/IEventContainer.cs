@@ -5,7 +5,7 @@ namespace NovaUnlimited.Core.Interfaces.Events;
 
 public interface IEventContainer
 {
-    void QueueEvent(AbstractEvent e);
+    void QueueEvent(BaseEvent e);
 
     int TurnNumber { get; }
 }

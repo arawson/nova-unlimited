@@ -5,6 +5,8 @@ using NovaUnlimited.Core.Entities.Events;
 using NovaUnlimited.Core.Util;
 using Xunit;
 
+namespace NovaUnlimited.UnitTests.Core;
+
 public class GameUnitTest
 {
     public const int TestMapRadius = 16;

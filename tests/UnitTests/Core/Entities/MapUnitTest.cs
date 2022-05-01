@@ -1,11 +1,12 @@
 
-namespace NovaUnlimited.Core.Entities;
-
 using System;
+using NovaUnlimited.Core.Entities;
 using NovaUnlimited.Core.Entities.Events;
 using NovaUnlimited.Core.Exceptions;
 using NovaUnlimited.Core.Util;
 using Xunit;
+
+namespace NovaUnlimited.UnitTests.Core;
 
 public class MapUnitTest
 {

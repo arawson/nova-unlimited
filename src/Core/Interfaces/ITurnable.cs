@@ -5,7 +5,7 @@ namespace NovaUnlimited.Core.Interfaces;
 
 public interface ITurnable
 {
-    List<AbstractEvent> ExecutePreTurn(int turnNumber);
+    List<BaseEvent> ExecutePreTurn(int turnNumber);
 
-    List<AbstractEvent> ExecutePostTurn(int turnNumber);
+    List<BaseEvent> ExecutePostTurn(int turnNumber);
 }

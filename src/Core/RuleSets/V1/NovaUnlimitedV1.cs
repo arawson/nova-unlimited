@@ -29,7 +29,7 @@ public class NovaUnlimitedV1 : IGameRuleSetV1
 
     public int TurnNumber => Game.TurnNumber;
 
-    private SortedDictionary<int, List<AbstractEvent>> Events;
+    private SortedDictionary<int, List<BaseEvent>> Events;
 
     private Game Game;
 
@@ -40,7 +40,7 @@ public class NovaUnlimitedV1 : IGameRuleSetV1
         Guard.Against.Null(game, nameof(game));
         Game = game;
 
-        Events = new SortedDictionary<int, List<AbstractEvent>>();
+        Events = new SortedDictionary<int, List<BaseEvent>>();
 
         foreach (var e in Game.Events.Where(x => x.TurnNumber > Game.TurnNumber))
         {
@@ -50,18 +50,18 @@ public class NovaUnlimitedV1 : IGameRuleSetV1
         placeStarEventHandlerV1 = new PlaceStarEventHandlerV1(Game, this);
     }
 
-    public List<AbstractEvent> ExecutePostTurn(int turnNumber)
+    public List<BaseEvent> ExecutePostTurn(int turnNumber)
     {
         throw new NotImplementedException();
     }
 
-    public List<AbstractEvent> ExecutePreTurn(int turnNumber)
+    public List<BaseEvent> ExecutePreTurn(int turnNumber)
     {
         throw new NotImplementedException();
     }
 
 #region "Event Handling"
-    public void QueueEvent(AbstractEvent e)
+    public void QueueEvent(BaseEvent e)
     {
         Game.QueueEvent(e);
         
@@ -70,13 +70,13 @@ public class NovaUnlimitedV1 : IGameRuleSetV1
         TrackQueueEvent(e);
     }
 
-    private void TrackQueueEvent(AbstractEvent e)
+    private void TrackQueueEvent(BaseEvent e)
     {
-        List<AbstractEvent>? eList = null;
+        List<BaseEvent>? eList = null;
         if (Events.TryGetValue(e.TurnNumber, out eList)) {
             eList.Add(e);
         } else {
-            eList = new List<AbstractEvent>();
+            eList = new List<BaseEvent>();
             eList.Add(e);
             Events[e.TurnNumber] = eList;
         }
@@ -106,7 +106,7 @@ public class NovaUnlimitedV1 : IGameRuleSetV1
         }
     }
 
-    private void ProcessBaseEvent(AbstractEvent e)
+    private void ProcessBaseEvent(BaseEvent e)
     {
         // TODO See Tile for the note on handling using a type-table
         var tileEvent = e as ITileEvent;

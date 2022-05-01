@@ -2,18 +2,36 @@
 using Ardalis.GuardClauses;
 using NovaUnlimited.Core.Entities.Events;
 using NovaUnlimited.Core.Interfaces.Events;
+using NovaUnlimited.Kernel;
+using NovaUnlimited.Kernel.Interfaces;
 
 namespace NovaUnlimited.Core.Entities;
 
-public class Game : BaseEntity, IEventContainer
+public class Game : BaseEntity, IEventContainer, IAggregateRoot
 {
-    public int RuleSetVersion { get; private set; }
-    public int TurnNumber { get; private set; }
-    public Map Map { get; private set; }
+    public int RuleSetVersion { get; set; }
 
-    public List<AbstractEvent> Events { get; private set; }
+    public int TurnNumber { get; set; }
 
-    public Game(int ruleSetVersion, Map map)
+    public Map Map { get; set; }
+
+    public List<BaseEvent> Events { get; set; }
+
+    public override List<BaseDomainEvent> DomainEvents { get; set; }
+
+    public Game()
+    {
+        // constructor for efcore
+        Events = new List<BaseEvent>();
+        DomainEvents = new List<BaseDomainEvent>();
+
+        Map = new Map(1);
+    }
+
+    public Game(
+        int ruleSetVersion,
+        Map map
+    )
     {
         Guard.Against.Null(map, nameof(map));
         Map = map;
@@ -23,7 +41,8 @@ public class Game : BaseEntity, IEventContainer
 
         TurnNumber = 1;
         
-        Events = new List<AbstractEvent>();
+        Events = new List<BaseEvent>();
+        DomainEvents = new List<BaseDomainEvent>();
     }
 
     public void IncrementTurn()
@@ -31,7 +50,7 @@ public class Game : BaseEntity, IEventContainer
         TurnNumber++;
     }
 
-    public void QueueEvent(AbstractEvent e)
+    public void QueueEvent(BaseEvent e)
     {
         Guard.Against.AgainstExpression(
             t => t >= TurnNumber,

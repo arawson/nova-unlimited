@@ -1,7 +1,8 @@
 
+using NovaUnlimited.Core.Util;
 using Xunit;
 
-namespace NovaUnlimited.Core.Util;
+namespace NovaUnlimited.UnitTests.Core.Util;
 
 public class HexUnitTest
 {
