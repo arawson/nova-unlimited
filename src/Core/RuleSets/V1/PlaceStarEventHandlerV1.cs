@@ -8,7 +8,7 @@ using NovaUnlimited.Core.Interfaces.RuleSets.V1;
 
 namespace NovaUnlimited.Core.RuleSets.V1;
 
-public class PlaceStarEventHandlerV1 : IPlaceStarEventListener, IEventHandlerV1
+public class PlaceStarEventHandlerV1 : IPlaceStarEventListener, IEventHandlerV1<PlaceStarEvent>
 {
     public Game Game { get; init; }
     public IGameRuleSetV1 RuleSet { get; init; }
