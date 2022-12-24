@@ -39,6 +39,31 @@ public class MapUnitTest
     }
 
     [Theory]
+    [InlineData(1, 1, 1)]
+    [InlineData(2, 2, 2)]
+    [InlineData(3, 3, 3)]
+    public void TestMapCenter(int radius, int q, int r)
+    {
+        var map = new Map(radius);
+        var center = map.Center;
+        Assert.Equal(r, center.R);
+        Assert.Equal(q, center.Q);
+        Assert.Equal(0, center.S);
+    }
+
+    [Theory]
+    [InlineData(1, 7)]
+    [InlineData(2, 19)]
+    [InlineData(3, 37)]
+    [InlineData(4, 61)]
+    public void TestMapArea(int radius, int area)
+    {
+        var map = new Map(radius);
+        Assert.Equal(area, map.Area);
+        Assert.Equal(area, map.Count);
+    }
+
+    [Theory]
     [InlineData(13,13,true)]
     [InlineData(5,8,true)]
     [InlineData(13,0,true)]

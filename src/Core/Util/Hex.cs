@@ -11,6 +11,35 @@ public enum HexDirection : int
     NorthWest, SouthWest, South
 }
 
+public static class HexHelper
+{
+    public static HexDirection RotateCW(HexDirection d)
+    {
+        switch (d) {
+            case HexDirection.North: return HexDirection.NorthEast;
+            case HexDirection.NorthEast: return HexDirection.SouthEast;
+            case HexDirection.SouthEast: return HexDirection.South;
+            case HexDirection.South: return HexDirection.SouthWest;
+            case HexDirection.SouthWest: return HexDirection.NorthWest;
+            case HexDirection.NorthWest: return HexDirection.North;
+            default: return HexDirection.North;
+        }
+    }
+
+    public static HexDirection RotateCCW(HexDirection d)
+    {
+        switch (d) {
+            case HexDirection.North: return HexDirection.NorthWest;
+            case HexDirection.NorthWest: return HexDirection.SouthWest;
+            case HexDirection.SouthWest: return HexDirection.South;
+            case HexDirection.South: return HexDirection.SouthEast;
+            case HexDirection.SouthEast: return HexDirection.NorthEast;
+            case HexDirection.NorthEast: return HexDirection.North;
+            default: return HexDirection.North;
+        }
+    }
+}
+
 public readonly record struct Hex
 {
     public static Hex[] DirectionVectors =

@@ -2,18 +2,22 @@
 using NovaUnlimited.Core.Util;
 using Ardalis.GuardClauses;
 using NovaUnlimited.Core.Exceptions;
+using System.Collections;
 
 namespace NovaUnlimited.Core.Entities;
 
 /*
 The hexagonal storage of the entire universe!
 */
-public class Map : BaseEntity
+public class Map : BaseEntity, IReadOnlyCollection<Tile?>
 {
     public Tile[,] Tiles { get; private set; }
     public Hex Size { get; private set; }
     public int Radius { get; private set; }
     public int Diameter { get; private set; }
+
+    public int Area { get; private set; }
+    public int Count => Area;
 
     public Map(int radius)
     {
@@ -24,11 +28,20 @@ public class Map : BaseEntity
         // with an even diameter in this system
         Diameter = radius * 2 + 1;
 
+        // There might be a 1 step formula for calculating Area, but I can
+        // figure that out later, my discrete methematics are a little rust.
+        Area = 1;
+        for (int i = 1; i <= Radius; i++) {
+            Area += (6 * i);
+        }
+
         Size = new(Diameter, Diameter);
         Tiles = new Tile[Diameter, Diameter];
     }
 
 #region "Helper Methods"
+
+    public Hex Center => new Hex(Radius, Radius);
     
 #endregion "Helper Methods"
 
@@ -124,5 +137,18 @@ public class Map : BaseEntity
             110 1
             */
     }
-#endregion "Map/Tile Manipulation"
+
+    
+    #endregion "Map/Tile Manipulation"
+
+    #region "IEnumerable Support"
+
+    public IEnumerator<Tile> GetEnumerator()
+    {
+        return new MapRingEnumerator(this);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    #endregion "IEnumerable Support"
 }
